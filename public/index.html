@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CITYFALL — Open World Prototype</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!-- =====================================================================
+       CONNECT / MENU SCREEN
+       ===================================================================== -->
+  <div id="menu" class="screen">
+    <div class="menu-card">
+      <h1 class="logo">CITY<span>FALL</span></h1>
+      <p class="tagline">An original open-world prototype · multiplayer · 3D</p>
+
+      <label>Player name
+        <input id="nameInput" type="text" maxlength="16" placeholder="Nico" value="" />
+      </label>
+      <label>Room / Session
+        <input id="roomInput" type="text" maxlength="24" placeholder="downtown" value="downtown" />
+      </label>
+
+      <button id="playBtn" class="primary">ENTER THE CITY</button>
+
+      <div class="hints">
+        <p><b>Controls</b> — WASD move · Shift run · Space jump · F enter/exit car ·
+           Mouse aim · LMB shoot · R reload · 1/2/3 weapons · Esc pause</p>
+        <p class="muted">Best with mouse + keyboard. Tip: steal a car, grab the package, drop it off for cash.</p>
+      </div>
+      <p id="menuError" class="error"></p>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       GAME CANVAS + HUD
+       ===================================================================== -->
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <!-- Top-left: mission -->
+    <div id="missionBox" class="hud-box">
+      <div id="missionTitle" class="hud-title">MISSION</div>
+      <div id="missionText" class="hud-text">—</div>
+      <div id="missionTimer" class="hud-sub"></div>
+    </div>
+
+    <!-- Top-right: wanted stars -->
+    <div id="wantedBox" class="hud-box">
+      <div id="wantedStars"></div>
+      <div id="wantedLabel" class="hud-sub">CLEAN</div>
+    </div>
+
+    <!-- Bottom-left: health/armor -->
+    <div id="vitalsBox" class="hud-box">
+      <div class="bar"><span>HP</span><div class="bar-track"><div id="hpFill" class="bar-fill hp"></div></div></div>
+      <div class="bar"><span>AR</span><div class="bar-track"><div id="arFill" class="bar-fill ar"></div></div></div>
+      <div id="cashDisplay" class="cash">$0</div>
+    </div>
+
+    <!-- Bottom-right: weapon + minimap -->
+    <div id="weaponBox" class="hud-box">
+      <div id="weaponName" class="hud-title">PISTOL</div>
+      <div id="weaponAmmo" class="hud-text">12 / 72</div>
+    </div>
+
+    <div id="minimap">
+      <canvas id="minimapCanvas" width="170" height="170"></canvas>
+      <div id="minimapMask"></div>
+    </div>
+
+    <!-- Center crosshair -->
+    <div id="crosshair"></div>
+
+    <!-- Hit marker / damage flash -->
+    <div id="damageFlash"></div>
+    <div id="hitMarker"></div>
+
+    <!-- Toast / notification feed -->
+    <div id="toastFeed"></div>
+
+    <!-- Player list (top-center) -->
+    <div id="playerList"></div>
+  </div>
+
+  <!-- =====================================================================
+       PAUSE / OVERLAY
+       ===================================================================== -->
+  <div id="pause" class="screen hidden">
+    <div class="menu-card">
+      <h2>PAUSED</h2>
+      <div class="hints">
+        <p><b>Keybinds</b></p>
+        <ul>
+          <li><b>WASD</b> — Move / drive</li>
+          <li><b>Mouse</b> — Aim camera</li>
+          <li><b>Shift</b> — Sprint</li>
+          <li><b>Space</b> — Jump / handbrake</li>
+          <li><b>F</b> — Enter / exit vehicle</li>
+          <li><b>LMB</b> — Fire</li>
+          <li><b>R</b> — Reload</li>
+          <li><b>1 / 2 / 3</b> — Switch weapon</li>
+          <li><b>Esc</b> — Pause</li>
+          <li><b>M</b> — Toggle cursor (chat box focus)</li>
+        </ul>
+      </div>
+      <button id="resumeBtn" class="primary">RESUME</button>
+      <button id="quitBtn" class="ghost">LEAVE SESSION</button>
+    </div>
+  </div>
+
+  <!-- Mobile control hint -->
+  <div id="mobileHint" class="hidden">Touch controls: drag right to look, left stick to move (basic).</div>
+
+  <!-- Chat -->
+  <div id="chatBar" class="hidden">
+    <input id="chatInput" type="text" maxlength="120" placeholder="Say something… (Enter to send, Esc to close)" />
+  </div>
+
+  <!-- =====================================================================
+       LIBRARY LOAD ORDER MATTERS:
+         1) Socket.io client (from server's own /socket.io endpoint)
+         2) Three.js core + addons via ES module import map (no build step)
+         3) Shared config as a CLASSIC script (attaches to globalThis)
+         4) Our ESM client entry, which imports the rest of the game modules
+       ===================================================================== -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- Shared config: classic script -> globalThis.__CITYFALL_CONFIG -->
+  <script src="/shared/config.js"></script>
+
+  <!-- Game entry (ES module) -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
