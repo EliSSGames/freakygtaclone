@@ -95,7 +95,7 @@ export class Vehicle {
     this.body = body;
     this.mesh.userData.vehicle = this;
     this.mesh.userData.entity = this;
-    scene.add(this.mesh);
+    this.scene.add(this.mesh);
   }
 
   place(pos, yaw) {
